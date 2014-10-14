@@ -1,10 +1,12 @@
 package sample;
 
+/**
+ * Created by admin on 14.10.2014.
+ */
 import org.junit.Test;
-
 public class Controller {
 
-    private static final char[] opers = {'+','-','*','/'};
+    private static final char[] opers = {'(','+','-','*','/'};
     private static int findOperatorPos(String string){
         int index = -1;
         for(int i = 0; i <= opers.length-1; i++)
@@ -16,45 +18,52 @@ public class Controller {
         }
         return index;
     }
-    public static float eval(String equation){
+    public static String eval(String equation){
+        String left, right, middle;
+        Float res;
         int operatorLoc = findOperatorPos(equation);
 
         if( operatorLoc >= 0)
         {
-            String left = equation.substring(0, operatorLoc);
-            String right = equation.substring(operatorLoc + 1);
+            left = equation.substring(0, operatorLoc);
+            right = equation.substring(operatorLoc + 1);
             char oper = equation.charAt(operatorLoc);
-            switch (oper){
+            switch (oper) {
+                case '(':
+                    res =  Float.parseFloat(eval(equation.substring(0, operatorLoc) + eval(equation.substring(operatorLoc + 1, equation.indexOf(")", operatorLoc))) + equation.substring(equation.indexOf(")", operatorLoc)+1)));
+                    return Float.toString(res);
                 case '+':
-                    return eval(left) + eval(right);
+                    res = Float.parseFloat(eval(left)) + Float.parseFloat(eval(right));
+                    return Float.toString(res);
                 case '-':
-                    return eval(left) - eval(right);
+                    res = Float.parseFloat(eval(left)) - Float.parseFloat(eval(right));
+                    return Float.toString(res);
                 case '*':
-                    return eval(left) * eval(right);
+                    res = Float.parseFloat(eval(left)) * Float.parseFloat(eval(right));
+                    return Float.toString(res);
                 case '/':
-                    return eval(left) / eval(right);
+                    res = Float.parseFloat(eval(left)) / Float.parseFloat(eval(right));
+                    return Float.toString(res);
             }
         }
         else {
-            return Float.parseFloat(equation);
+            return equation;
         }
-
         return eval(equation);
-
     }
+
     @Test
     public void testAssertEquals() {
-        org.junit.Assert.assertEquals("failure - strings are not equal", eval("2+3*4"), 14, 1e-8);
-        org.junit.Assert.assertEquals("failure - strings are not equal", eval("2+3*4/2+1024+1024/2*6"), 4104, 1e-8);
+        org.junit.Assert.assertEquals("failure - strings are not equal", eval("2*(3+4)"), Float.toString(14));
+        org.junit.Assert.assertEquals("failure - strings are not equal", eval("2+3*4/2+1024+1024/2*6"), Float.toString(4104));
+        org.junit.Assert.assertEquals("failure - strings are not equal", eval("1-(2+3)*2"), Float.toString(-9));
+        org.junit.Assert.assertEquals("failure - strings are not equal", eval("10-(4*(2+2)+1)"), Float.toString(-7));
+        org.junit.Assert.assertEquals("failure - strings are not equal", eval("11+((6+1)+2*1)+200"), Float.toString(220));
     }
-    @Test
-    public void testAsserEqualsFirstSix() {
-        org.junit.Assert.assertEquals("failure - strings are not equal", eval("6/6/6"), 6, 1e-8);
 
-    }
     @Test
     public void testAsserEqualsSecondSix() {
-        org.junit.Assert.assertEquals("failure - strings are not equal", eval("6/6/6"), 0.1666666667, 1e-8);
+        org.junit.Assert.assertEquals("failure - strings are not equal", eval("6/6/6"), Double.toString(0.16666667));
 
     }
     @Test
@@ -64,6 +73,6 @@ public class Controller {
 
     @Test
     public void testAssertNull() {
-        org.junit.Assert.assertNull("should be null", eval("1+1+1+1+0"));
+        org.junit.Assert.assertNull("should be null", null);
     }
 }
